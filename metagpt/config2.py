@@ -5,6 +5,7 @@
 @Author  : alexanderwu
 @File    : config2.py
 """
+
 import os
 from pathlib import Path
 from typing import Dict, Iterable, List, Literal, Optional
@@ -19,8 +20,10 @@ from metagpt.configs.redis_config import RedisConfig
 from metagpt.configs.s3_config import S3Config
 from metagpt.configs.search_config import SearchConfig
 from metagpt.configs.workspace_config import WorkspaceConfig
-from metagpt.const import CONFIG_ROOT, METAGPT_ROOT
+from metagpt.const import CONFIG_ROOT
+from agents.core.const import AGENTS_ROOT
 from metagpt.utils.yaml_model import YamlModel
+from loguru import logger
 
 
 class CLIParams(BaseModel):
@@ -69,7 +72,6 @@ class Config(CLIParams, YamlModel):
     workspace: WorkspaceConfig = WorkspaceConfig()
     enable_longterm_memory: bool = False
     code_review_k_times: int = 2
-    agentops_api_key: str = ""
 
     # Will be removed in the future
     metagpt_tti_url: str = ""
@@ -96,9 +98,10 @@ class Config(CLIParams, YamlModel):
         - Priority: env < default_config_paths
         - Inside default_config_paths, the latter one overwrites the former one
         """
+        logger.info(f"reading the configs from path -> {AGENTS_ROOT}")
         default_config_paths: List[Path] = [
-            METAGPT_ROOT / "config/config2.yaml",
-            CONFIG_ROOT / "config2.yaml",
+            AGENTS_ROOT / "config.yaml",
+            CONFIG_ROOT / "config.yaml",
         ]
 
         dicts = [dict(os.environ)]
